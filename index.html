@@ -1,87 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather-App</title>
+    <title>Weather Pro - Modern Weather App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <div class="card">
-        <div class="search">
-            <input type="text" placeholder="Enter city name" spellcheck="false">
-            <button><img src="images/search.png" alt=""></button>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">Weather App</h1>
+            <p class="subtitle">Your modern weather companion</p>
+        </header>
+
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search for a city..." id="searchInput">
+                <button class="search-btn" id="searchBtn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="control-buttons">
+                <button class="btn" id="locationBtn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    Use Location
+                </button>
+                <button class="theme-toggle" id="themeToggle">🌙</button>
+            </div>
         </div>
-        <div class="error">
-            <p>Invalid city name</p>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading weather data...</p>
         </div>
-        <div class="weather">
-            <img src="images/rain.png" class="weather-icon">
-            <h1 class="temp">22°c</h1>
-            <h2 class="city">New York</h2>
-            <div class="details">
-                <div class="col">
-                    <img src="images/humidity.png" alt="">
-                    <div>
-                        <p class="humidity">50%</p>
-                        <p>Humidity</p>
-                    </div>
+
+        <div class="error-message" id="errorMessage">
+            <p>City not found. Please try again.</p>
+        </div>
+
+        <div class="main-weather-card" id="mainWeatherCard" style="display: none;">
+            <div class="weather-icon" id="weatherIcon">🌤️</div>
+            <div class="current-temp" id="currentTemp">22°C</div>
+            <div class="current-city" id="currentCity">New York</div>
+            <div class="weather-description" id="weatherDescription">Partly Cloudy</div>
+            
+            <div class="weather-details">
+                <div class="detail-card">
+                    <div class="detail-icon">💧</div>
+                    <div class="detail-value" id="humidity">50%</div>
+                    <div class="detail-label">Humidity</div>
                 </div>
-                <div class="col">
-                    <img src="images/wind.png" alt="">
-                    <div>
-                        <p class="wind">15 km/h</p>
-                        <p>Wind Speed</p>
-                    </div>
+                <div class="detail-card">
+                    <div class="detail-icon">💨</div>
+                    <div class="detail-value" id="windSpeed">15 km/h</div>
+                    <div class="detail-label">Wind Speed</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-icon">👁️</div>
+                    <div class="detail-value" id="visibility">10 km</div>
+                    <div class="detail-label">Visibility</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-icon">🌡️</div>
+                    <div class="detail-value" id="feelsLike">25°C</div>
+                    <div class="detail-label">Feels Like</div>
                 </div>
             </div>
         </div>
+
+        <div class="forecast-container">
+            <h2 class="forecast-title">5-Day Forecast</h2>
+            <div class="forecast-grid" id="forecastGrid">
+                <!-- Forecast cards will be dynamically generated -->
+            </div>
+        </div>
     </div>
-
-    <script>
-        const apiKey = "5311126d7ce8aefccfcf395ca6344101";
-        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?&units=metric&q=";
-        const searchBox = document.querySelector(".search input");
-        const searchBtn = document.querySelector(".search button");
-        const weatherIcon=document.querySelector(".weather-icon")
-        async function checkWeather(city) {
-            const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
-
-            if(response.status==404){
-                document.querySelector(".error").style.display="block";
-                document.querySelector(".weather").style.display="none";
-            }else{
-
-                var data = await response.json();
-                // console.log(data);
-                document.querySelector(".city").innerHTML = data.name;
-                document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
-                document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
-                document.querySelector(".wind").innerHTML = data.wind.speed + "km/h";
-    
-                if(data.weather[0].main=="Clouds"){
-                    weatherIcon.src="images/clouds.png"
-                }else if(data.weather[0].main=="Clear"){
-                    weatherIcon.src="images/clear.png"
-                }else if(data.weather[0].main=="Rain"){
-                    weatherIcon.src="images/rain.png"
-                }else if(data.weather[0].main=="Drizzle"){
-                    weatherIcon.src="images/drizzle.png"
-                }else if(data.weather[0].main=="Mist"){
-                    weatherIcon.src="images/mist.png"
-                }
-                document.querySelector(".weather").style.display="block";
-                document.querySelector(".error").style.display="none";
-            }
-
-        }
-        searchBtn.addEventListener("click", () => {
-            checkWeather(searchBox.value);
-        })
-
-    </script>
+    <script src="script.js"></script>
 </body>
-
 </html>
