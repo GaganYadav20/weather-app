@@ -34,7 +34,7 @@ A beautiful, modern weather application built with vanilla JavaScript, featuring
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/GaganYadav20/weather-App.git
+   git clone https://github.com/GaganYadav20/weather-app.git
    cd weather-App
    ```
 
